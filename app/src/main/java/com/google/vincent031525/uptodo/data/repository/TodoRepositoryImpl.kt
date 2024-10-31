@@ -55,6 +55,45 @@ class TodoRepositoryImpl(
         emit(Result.failure(it))
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun updateTodo(todo: Todo) = flow {
+        if (token == null) throw Exception("Token is null")
+        if (cookie == null) throw Exception("Cookie is null")
+        val response =
+            remoteDataSource.updateTodo(apiKey, token, cookie, todo.id, todo.toUpdateRequest())
+        when (response.code()) {
+            200 -> {
+                response.body()?.let {
+                    emit(Result.success(""))
+                }
+            }
+
+            else -> {
+                throw Exception("Response code is not 200, ${response.code()}")
+            }
+        }
+    }.catch {
+        emit(Result.failure(it))
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun doneTodo(todo: Todo) = flow {
+        if (token == null) throw Exception("Token is null")
+        if (cookie == null) throw Exception("Cookie is null")
+        val response = remoteDataSource.doneTodo(apiKey, token, cookie, todo.id)
+        when (response.code()) {
+            200 -> {
+                response.body()?.let {
+                    emit(Result.success(it.id))
+                } ?: throw Exception("Response body is null")
+            }
+
+            else -> {
+                throw Exception("Response code is not 200, ${response.code()}")
+            }
+        }
+    }.catch {
+        emit(Result.failure(it))
+    }.flowOn(Dispatchers.IO)
+
     override suspend fun deleteTodo(todo: Todo) = flow {
         if (token == null) throw Exception("Token is null")
         if (cookie == null) throw Exception("Cookie is null")

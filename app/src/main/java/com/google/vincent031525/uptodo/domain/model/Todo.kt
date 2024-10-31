@@ -2,6 +2,7 @@ package com.google.vincent031525.uptodo.domain.model
 
 import com.google.vincent031525.uptodo.data.data_source.local.todo.TodoEntity
 import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.CreateTodoRequest
+import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.UpdateTodoRequest
 
 data class Todo(
     val id: String,
@@ -18,6 +19,12 @@ data class Todo(
     )
 
     fun toCreateRequest() = CreateTodoRequest(
+        title = title,
+        content = content,
+        dead_time = deadTime
+    )
+
+    fun toUpdateRequest() = UpdateTodoRequest(
         title = title,
         content = content,
         dead_time = deadTime

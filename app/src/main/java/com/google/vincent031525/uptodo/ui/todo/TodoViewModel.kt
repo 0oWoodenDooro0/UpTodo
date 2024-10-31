@@ -19,6 +19,8 @@ data class TodoViewModelState(
 
 sealed interface TodoViewModelAction {
     data class AddTodo(val todo: Todo) : TodoViewModelAction
+    data class UpdateTodo(val todo: Todo) : TodoViewModelAction
+    data class DoneTodo(val todo: Todo) : TodoViewModelAction
     data class DeleteTodo(val todo: Todo) : TodoViewModelAction
     data object RefreshTodo : TodoViewModelAction
 }
@@ -39,6 +41,27 @@ class TodoViewModel(private val todoUseCases: TodoUseCases) : ViewModel() {
             is TodoViewModelAction.AddTodo -> {
                 viewModelScope.launch {
                     todoUseCases.addTodo(action.todo).collect { result ->
+                        result.onSuccess {
+                            getTodos()
+                        }
+                    }
+                }
+            }
+
+
+            is TodoViewModelAction.UpdateTodo -> {
+                viewModelScope.launch {
+                    todoUseCases.updateTodo(action.todo).collect { result ->
+                        result.onSuccess {
+                            getTodos()
+                        }
+                    }
+                }
+            }
+
+            is TodoViewModelAction.DoneTodo -> {
+                viewModelScope.launch {
+                    todoUseCases.doneTodo(action.todo).collect { result ->
                         result.onSuccess {
                             getTodos()
                         }

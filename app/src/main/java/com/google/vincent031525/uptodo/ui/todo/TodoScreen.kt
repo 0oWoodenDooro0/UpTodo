@@ -29,30 +29,33 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoScreen(modifier: Modifier = Modifier, viewModel: TodoViewModel = koinViewModel()) {
-    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text(text = "Task") }) }, floatingActionButton = {
-        FloatingActionButton(onClick = {
-            viewModel.onAction(
-                TodoViewModelAction.AddTodo(
-                    Todo(
-                        title = "New Task",
-                        content = "New Task Content",
-                        deadTime = "2024-08-26T00:00:00Z",
-                        id = "1"
+    Scaffold(
+        topBar = { CenterAlignedTopAppBar(title = { Text(text = "Task") }) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                viewModel.onAction(
+                    TodoViewModelAction.AddTodo(
+                        Todo(
+                            title = "New Task",
+                            content = "New Task Content",
+                            deadTime = "2024-08-26T00:00:00Z",
+                            id = "1"
+                        )
                     )
                 )
-            )
-        }, modifier = modifier) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_add_24), contentDescription = null
-            )
-        }
-    }) { paddingValues ->
+            }, modifier = modifier) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_add_24),
+                    contentDescription = null
+                )
+            }
+        }) { paddingValues ->
         Column(modifier = modifier.padding(paddingValues)) {
             LazyColumn {
                 items(viewModel.state.todos) { task ->
                     TodoView(
                         todo = task,
-                        onComplete = { },
+                        onComplete = { viewModel.onAction(TodoViewModelAction.DoneTodo(it)) },
                         onDelete = { viewModel.onAction(TodoViewModelAction.DeleteTodo(it)) })
                 }
             }
@@ -61,7 +64,12 @@ fun TodoScreen(modifier: Modifier = Modifier, viewModel: TodoViewModel = koinVie
 }
 
 @Composable
-fun TodoView(modifier: Modifier = Modifier, todo: Todo, onComplete: (Todo) -> Unit, onDelete: (Todo) -> Unit) {
+fun TodoView(
+    modifier: Modifier = Modifier,
+    todo: Todo,
+    onComplete: (Todo) -> Unit,
+    onDelete: (Todo) -> Unit
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -72,10 +80,16 @@ fun TodoView(modifier: Modifier = Modifier, todo: Todo, onComplete: (Todo) -> Un
                 Text(text = todo.title, modifier = Modifier.padding(horizontal = 24.dp))
             }
             IconButton(onClick = { onComplete(todo) }) {
-                Icon(painter = painterResource(R.drawable.baseline_check_24), contentDescription = null)
+                Icon(
+                    painter = painterResource(R.drawable.baseline_check_24),
+                    contentDescription = null
+                )
             }
             IconButton(onClick = { onDelete(todo) }) {
-                Icon(painter = painterResource(R.drawable.outline_delete_24), contentDescription = null)
+                Icon(
+                    painter = painterResource(R.drawable.outline_delete_24),
+                    contentDescription = null
+                )
             }
         }
     }

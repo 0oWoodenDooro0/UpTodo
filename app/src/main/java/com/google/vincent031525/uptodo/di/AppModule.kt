@@ -14,10 +14,12 @@ import com.google.vincent031525.uptodo.domain.repository.TodoRepository
 import com.google.vincent031525.uptodo.domain.repository.UserRepository
 import com.google.vincent031525.uptodo.domain.use_case.AddTodo
 import com.google.vincent031525.uptodo.domain.use_case.DeleteTodo
+import com.google.vincent031525.uptodo.domain.use_case.DoneTodo
 import com.google.vincent031525.uptodo.domain.use_case.GetTodo
 import com.google.vincent031525.uptodo.domain.use_case.LoginUser
 import com.google.vincent031525.uptodo.domain.use_case.RegisterUser
 import com.google.vincent031525.uptodo.domain.use_case.TodoUseCases
+import com.google.vincent031525.uptodo.domain.use_case.UpdateTodo
 import com.google.vincent031525.uptodo.ui.login.LoginViewModel
 import com.google.vincent031525.uptodo.ui.register.RegisterViewModel
 import com.google.vincent031525.uptodo.ui.todo.TodoViewModel
@@ -41,11 +43,13 @@ fun provideDataBase(application: Application): TodoDatabase = Room.databaseBuild
 fun provideDao(todoDatabase: TodoDatabase): TodoDao = todoDatabase.todoDao
 
 fun provideTodoApi() =
-    Retrofit.Builder().baseUrl("https://todo-plvv.onrender.com/").addConverterFactory(GsonConverterFactory.create())
+    Retrofit.Builder().baseUrl("https://todo-plvv.onrender.com/")
+        .addConverterFactory(GsonConverterFactory.create())
         .build().create(TodoApi::class.java)
 
 fun provideUserApi() =
-    Retrofit.Builder().baseUrl("https://todo-plvv.onrender.com/").addConverterFactory(GsonConverterFactory.create())
+    Retrofit.Builder().baseUrl("https://todo-plvv.onrender.com/")
+        .addConverterFactory(GsonConverterFactory.create())
         .build().create(UserApi::class.java)
 
 fun provideApiKey() = BuildConfig.API_KEY
@@ -59,7 +63,9 @@ val apiModule = module {
     single { provideTodoApi() }
     single { provideUserApi() }
     single(named("apiKey")) { provideApiKey() }
-    single(named("token")) { SharedPrefencesManager(get()).getString("token")?.let { "Bearer $it" } }
+    single(named("token")) {
+        SharedPrefencesManager(get()).getString("token")?.let { "Bearer $it" }
+    }
     single(named("cookie")) { SharedPrefencesManager(get()).getString("id")?.let { "id=$it" } }
 }
 
@@ -79,8 +85,10 @@ val repositoryModule = module {
 val useCaseModule = module {
     factory { AddTodo(get()) }
     factory { GetTodo(get()) }
+    factory { UpdateTodo(get()) }
+    factory { DoneTodo(get()) }
     factory { DeleteTodo(get()) }
-    factory { TodoUseCases(get(), get(), get()) }
+    factory { TodoUseCases(get(), get(), get(), get(), get()) }
     factory { LoginUser(get()) }
     factory { RegisterUser(get()) }
 }

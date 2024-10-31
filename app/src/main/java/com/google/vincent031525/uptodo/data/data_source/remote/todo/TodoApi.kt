@@ -3,8 +3,10 @@ package com.google.vincent031525.uptodo.data.data_source.remote.todo
 import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.CreateTodoRequest
 import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.CreateTodoResponse
 import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.DeleteTodoResponse
+import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.DoneTodoResponse
 import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.GetTodosResponse
-import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.TodoDto
+import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.UpdateTodoRequest
+import com.google.vincent031525.uptodo.data.data_source.remote.todo.model.UpdateTodoResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -33,8 +35,20 @@ interface TodoApi {
 
     @PUT("/todo/{id}")
     suspend fun updateTodo(
-        @Path("id") id: String, @Body todo: TodoDto
-    )
+        @Header("API-KEY") apiKey: String,
+        @Header("Authorization") authorization: String,
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String,
+        @Body todo: UpdateTodoRequest
+    ): Response<UpdateTodoResponse>
+
+    @GET("/todo/done/{id}")
+    suspend fun doneTodo(
+        @Header("API-KEY") apiKey: String,
+        @Header("Authorization") authorization: String,
+        @Header("Cookie") cookie: String,
+        @Path("id") id: String
+    ): Response<DoneTodoResponse>
 
     @DELETE("/todo/{id}")
     suspend fun deleteTodo(
