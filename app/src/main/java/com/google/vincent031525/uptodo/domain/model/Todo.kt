@@ -21,12 +21,12 @@ data class Todo(
     fun toCreateRequest() = CreateTodoRequest(
         title = title,
         content = content,
-        dead_time = deadTime
+        deadTime = deadTime
     )
 
     fun toUpdateRequest() = UpdateTodoRequest(
         title = title,
         content = content,
-        dead_time = deadTime
+        deadTime = deadTime
     )
 }

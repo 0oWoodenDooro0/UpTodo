@@ -20,8 +20,8 @@ class UserRepositoryImpl(
         when (response.code()) {
             200 -> {
                 response.body()?.let {
-                    sharedPrefences.saveString("id", it.data.ID)
-                    sharedPrefences.saveString("token", it.token.AccessToken)
+                    sharedPrefences.saveString("id", it.data.id)
+                    sharedPrefences.saveString("token", it.token.accessToken)
                     emit(Result.success(it.msg))
                 } ?: throw Exception("Response body is null")
             }

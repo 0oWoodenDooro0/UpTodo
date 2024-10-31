@@ -23,11 +23,13 @@ import com.google.vincent031525.uptodo.domain.use_case.UpdateTodo
 import com.google.vincent031525.uptodo.ui.login.LoginViewModel
 import com.google.vincent031525.uptodo.ui.register.RegisterViewModel
 import com.google.vincent031525.uptodo.ui.todo.TodoViewModel
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 val viewModelModule = module {
@@ -42,15 +44,17 @@ fun provideDataBase(application: Application): TodoDatabase = Room.databaseBuild
 
 fun provideDao(todoDatabase: TodoDatabase): TodoDao = todoDatabase.todoDao
 
-fun provideTodoApi() =
-    Retrofit.Builder().baseUrl("https://todo-plvv.onrender.com/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build().create(TodoApi::class.java)
+fun provideOkHttpClient() =
+    OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS).connectTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS).build()
 
-fun provideUserApi() =
-    Retrofit.Builder().baseUrl("https://todo-plvv.onrender.com/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build().create(UserApi::class.java)
+fun provideTodoApi(okHttpClient: OkHttpClient) =
+    Retrofit.Builder().client(okHttpClient).baseUrl("https://todo-plvv.onrender.com/")
+        .addConverterFactory(GsonConverterFactory.create()).build().create(TodoApi::class.java)
+
+fun provideUserApi(okHttpClient: OkHttpClient) =
+    Retrofit.Builder().client(okHttpClient).baseUrl("https://todo-plvv.onrender.com/")
+        .addConverterFactory(GsonConverterFactory.create()).build().create(UserApi::class.java)
 
 fun provideApiKey() = BuildConfig.API_KEY
 
@@ -60,8 +64,9 @@ val databaseModule = module {
 }
 
 val apiModule = module {
-    single { provideTodoApi() }
-    single { provideUserApi() }
+    single { provideOkHttpClient() }
+    single { provideTodoApi(get()) }
+    single { provideUserApi(get()) }
     single(named("apiKey")) { provideApiKey() }
     single(named("token")) {
         SharedPrefencesManager(get()).getString("token")?.let { "Bearer $it" }
