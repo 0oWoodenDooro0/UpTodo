@@ -29,7 +29,7 @@ class TodoRepositoryImpl(
             }
 
             else -> {
-                throw Exception("Response code is not 200, ${response.code()}")
+                throw Exception("Response code is not 200, ${response.body()?.msg ?: response.code()}")
             }
         }
     }.catch {
