@@ -1,5 +1,6 @@
 package com.google.vincent031525.uptodo.data.repository
 
+import android.util.Log
 import com.google.vincent031525.uptodo.data.data_source.local.todo.TodoDao
 import com.google.vincent031525.uptodo.data.data_source.remote.todo.TodoApi
 import com.google.vincent031525.uptodo.domain.model.Todo
@@ -20,6 +21,7 @@ class TodoRepositoryImpl(
     override fun getTodos(id: String) = flow {
         if (token == null) throw Exception("Token is null")
         if (cookie == null) throw Exception("Cookie is null")
+        Log.d("TodoRepositoryImpl", "getTodos: $token")
         val response = remoteDataSource.getTodos(apiKey, token, cookie)
         when (response.code()) {
             200 -> {
@@ -29,7 +31,11 @@ class TodoRepositoryImpl(
             }
 
             else -> {
-                throw Exception("Response code is not 200, ${response.body()?.msg ?: response.code()}")
+                throw Exception(
+                    "Response code is not 200, ${
+                        response.errorBody()?.string() ?: response.code()
+                    }"
+                )
             }
         }
     }.catch {

@@ -1,5 +1,6 @@
 package com.google.vincent031525.uptodo.data.repository
 
+import android.util.Log
 import com.google.vincent031525.uptodo.data.data_source.local.user.SharedPrefencesManager
 import com.google.vincent031525.uptodo.data.data_source.remote.user.UserApi
 import com.google.vincent031525.uptodo.domain.model.User
@@ -22,12 +23,18 @@ class UserRepositoryImpl(
                 response.body()?.let {
                     sharedPrefences.saveString("id", it.data.id)
                     sharedPrefences.saveString("token", it.token.accessToken)
+                    Log.d("UserRepositoryImpl", "login: ${it.data.id}")
+                    Log.d("UserRepositoryImpl", "login: ${it.token.accessToken}")
                     emit(Result.success(it.msg))
                 } ?: throw Exception("Response body is null")
             }
 
             else -> {
-                throw Exception("Response code is not 200, ${response.body()?.msg ?: response.code()}")
+                throw Exception(
+                    "Response code is not 200, ${
+                        response.errorBody()?.string() ?: response.code()
+                    }"
+                )
             }
         }
     }.catch { emit(Result.failure(it)) }.flowOn(Dispatchers.IO)
@@ -42,7 +49,11 @@ class UserRepositoryImpl(
             }
 
             else -> {
-                throw Exception("Response code is not 200, ${response.code()}")
+                throw Exception(
+                    "Response code is not 200, ${
+                        response.errorBody()?.string() ?: response.code()
+                    }"
+                )
             }
         }
     }.catch { emit(Result.failure(it)) }.flowOn(Dispatchers.IO)

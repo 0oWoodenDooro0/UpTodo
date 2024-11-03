@@ -68,10 +68,10 @@ val apiModule = module {
     single { provideTodoApi(get()) }
     single { provideUserApi(get()) }
     single(named("apiKey")) { provideApiKey() }
-    single(named("token")) {
+    factory(named("token")) {
         SharedPrefencesManager(get()).getString("token")?.let { "Bearer $it" }
     }
-    single(named("cookie")) { SharedPrefencesManager(get()).getString("id")?.let { "id=$it" } }
+    factory(named("cookie")) { SharedPrefencesManager(get()).getString("id")?.let { "id=$it" } }
 }
 
 val sharedPrefencesModule = module {

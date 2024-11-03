@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 data class TodoViewModelState(
     val isLoading: Boolean = false,
     val todos: List<Todo> = emptyList(),
+    val completeTodos: List<Todo> = emptyList()
 )
 
 sealed interface TodoViewModelAction {
@@ -85,8 +86,9 @@ class TodoViewModel(private val todoUseCases: TodoUseCases) : ViewModel() {
 
     private fun getTodos() {
         getTodosJob?.cancel()
-        getTodosJob = todoUseCases.getTodos().onEach {
-            state = state.copy(todos = it)
+        getTodosJob = todoUseCases.getTodos().onEach { todoList ->
+            state = state.copy(todos = todoList.filter { !it.done },
+                completeTodos = todoList.filter { it.done })
         }.launchIn(viewModelScope)
     }
 }
