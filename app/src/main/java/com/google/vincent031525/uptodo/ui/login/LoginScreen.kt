@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +33,12 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextField(value = usernameValue.value,
+        OutlinedTextField(value = usernameValue.value,
             onValueChange = { usernameValue.value = it },
             singleLine = true,
             modifier = Modifier.padding(8.dp),
             placeholder = { Text(text = "Username") })
-        TextField(value = passwordValue.value,
+        OutlinedTextField(value = passwordValue.value,
             onValueChange = { passwordValue.value = it },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
